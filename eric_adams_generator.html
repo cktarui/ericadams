@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Eric Adams Quotes</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #f9f9f7;
+    color: #1a1a1a;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+
+  .widget { width: 100%; max-width: 640px; }
+
+  .quote-card {
+    background: #fff;
+    border: 1px solid #e5e5e0;
+    border-radius: 14px;
+    padding: 2rem 2rem 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .category-badge {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: #185fa5;
+    background: #e6f1fb;
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+  }
+
+  .quote-text {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 20px;
+    line-height: 1.65;
+    color: #1a1a1a;
+    margin-bottom: 1.25rem;
+  }
+  .quote-text::before { content: '\201C'; }
+  .quote-text::after  { content: '\201D'; }
+
+  .quote-author {
+    font-size: 13px;
+    color: #888;
+    text-align: right;
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  button {
+    font-family: inherit;
+    font-size: 13px;
+    padding: 7px 14px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background: #fff;
+    color: #1a1a1a;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  button:hover { background: #f3f3f0; }
+
+  select {
+    font-family: inherit;
+    font-size: 13px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background: #fff;
+    color: #1a1a1a;
+    cursor: pointer;
+  }
+
+  .editor {
+    background: #f3f3f0;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    border: 1px solid #e5e5e0;
+  }
+
+  .editor-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 10px;
+  }
+
+  .quote-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+    max-height: 260px;
+    overflow-y: auto;
+  }
+
+  .quote-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    background: #fff;
+    border: 1px solid #e5e5e0;
+    border-radius: 8px;
+    padding: 8px 10px;
+  }
+
+  .quote-row-text { flex: 1; font-size: 13px; color: #1a1a1a; line-height: 1.4; }
+  .quote-row-cat  { font-size: 11px; color: #185fa5; margin-top: 2px; }
+
+  .del-btn {
+    font-size: 17px;
+    line-height: 1;
+    border: none;
+    background: transparent;
+    color: #bbb;
+    cursor: pointer;
+    padding: 0 2px;
+    flex-shrink: 0;
+    transition: color 0.15s;
+  }
+  .del-btn:hover { color: #c0392b; background: transparent; }
+
+  .add-section { margin-top: 12px; }
+  .add-label { font-size: 13px; font-weight: 600; color: #666; margin-bottom: 8px; }
+
+  .add-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .add-row input {
+    flex: 1;
+    min-width: 150px;
+    font-family: inherit;
+    font-size: 13px;
+    padding: 7px 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+    color: #1a1a1a;
+    outline: none;
+  }
+  .add-row input:focus { box-shadow: 0 0 0 2px #b5d4f4; }
+
+  .add-btn {
+    background: #e6f1fb;
+    color: #185fa5;
+    border-color: transparent;
+    font-weight: 600;
+  }
+  .add-btn:hover { background: #b5d4f4; }
+
+  .hint { font-size: 12px; color: #aaa; margin-top: 10px; }
+</style>
+</head>
+<body>
+<div class="widget">
+  <div class="quote-card">
+    <div class="category-badge" id="qcat"></div>
+    <div class="quote-text" id="qt"></div>
+    <div class="quote-author">— Eric Adams</div>
+  </div>
+
+  <div class="btn-row">
+    <button onclick="nextQuote()">↻ New quote</button>
+    <select id="cat-filter" onchange="filterCategory()">
+      <option value="all">All categories</option>
+      <option value="The classics">The classics</option>
+      <option value="Eric on Eric">Eric on Eric</option>
+      <option value="Eric on love">Eric on love</option>
+      <option value="Eric on faith">Eric on faith</option>
+      <option value="Eric on New York City">Eric on New York City</option>
+      <option value="Best of the rest">Best of the rest</option>
+    </select>
+    <button onclick="toggleEditor()" id="edit-btn">Edit quotes</button>
+  </div>
+
+  <div class="editor" id="editor" style="display:none;">
+    <div class="editor-title">All quotes</div>
+    <div class="quote-list" id="quote-list"></div>
+    <div class="add-section">
+      <div class="add-label">Add a quote</div>
+      <div class="add-row">
+        <input id="new-q" placeholder="Quote text" />
+        <select id="new-cat">
+          <option value="The classics">The classics</option>
+          <option value="Eric on Eric">Eric on Eric</option>
+          <option value="Eric on love">Eric on love</option>
+          <option value="Eric on faith">Eric on faith</option>
+          <option value="Eric on New York City">Eric on New York City</option>
+          <option value="Best of the rest">Best of the rest</option>
+        </select>
+        <button class="add-btn" onclick="addQuote()">Add</button>
+      </div>
+    </div>
+    <div class="hint">Edits are saved automatically in this browser.</div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'eric_adams_quotes_v1';
+const DEFAULTS = [
+  {text:"All my haters become my waiters when I sit down at the table of success.",cat:"The classics"},
+  {text:"Stay focused, no distractions and grind.",cat:"The classics"},
+  {text:"This is a place where every day you wake up you could experience everything from a plane crashing into our Trade Center to a person who's celebrating a new business that's open.",cat:"The classics"},
+  {text:"I don't care what anyone says, there are ghosts in there, man.",cat:"The classics"},
+  {text:"If you're going to hang out with the boys at night, you've got to get up with the men in the morning.",cat:"The classics"},
+  {text:"It's not the tweet, it's the street!",cat:"The classics"},
+  {text:"I am the mayor. This is the city of nightlife. I must test the product.",cat:"The classics"},
+  {text:"I am the pilot, folks, and you are all passengers. Stop praying for me to crash the plane. Pray for me to land the plane because there's no parachutes on this plane. We're all going down together.",cat:"The classics"},
+  {text:"I'm the Biden of Brooklyn.",cat:"Eric on Eric"},
+  {text:"I am Gandhi-like. I think like Gandhi. I act like Gandhi. I want to be like Gandhi.",cat:"Eric on Eric"},
+  {text:"I am perfectly imperfect, and have occasionally eaten fish.",cat:"Eric on Eric"},
+  {text:"I'm like broccoli. You're going to hate me now, but you're going to love me later.",cat:"Eric on Eric"},
+  {text:"Everyone that knows me knows one thing: I hate rats.",cat:"Eric on Eric"},
+  {text:"Deep down, I think I must be a little bit Dominican.",cat:"Eric on Eric"},
+  {text:"I moved to Bedford-Stuyvesant 20 years ago. No matter how modest it is, it's my home.",cat:"Eric on Eric"},
+  {text:"I don't know what I'd do without my incense, my candles, my bubble baths and my roses.",cat:"Eric on Eric"},
+  {text:"I am you.",cat:"Eric on Eric"},
+  {text:"Everyone who knows me knows that I follow the campaign rules and I follow the law.",cat:"Eric on Eric"},
+  {text:"You're looking to date. You may drive by. You may see eye candy sitting down somewhere, you may want to park and come and slip them your number.",cat:"Eric on love"},
+  {text:"We can talk about erectile dysfunction but not clitoral stimulation – something's wrong. Something is just wrong.",cat:"Eric on love"},
+  {text:"She said I'm messing with homeless people. One should be happy if someone wants to make love to them. You know?",cat:"Eric on love"},
+  {text:"God told me, 'Eric, you're going to be mayor.'",cat:"Eric on faith"},
+  {text:"God said, 'I'm going to take the most broken person and I'm going to elevate him to the place of being the mayor of the most powerful city on the globe.' He could have made me the mayor of Topeka, Kansas.",cat:"Eric on faith"},
+  {text:"It doesn't matter who my opponent is as long as my campaign manager is God.",cat:"Eric on faith"},
+  {text:"Don't tell me about no separation of church and state. State is the body, church is the heart. You take the heart out of the body, the body dies.",cat:"Eric on faith"},
+  {text:"Lay hands on our media. Heal them. Put honesty in their hearts.",cat:"Eric on faith"},
+  {text:"Notice how we utilize the letter F for faith. Our opponents utilize the letter F for profanity.",cat:"Eric on faith"},
+  {text:"When the mayor has swagger, the city has swagger.",cat:"Eric on New York City"},
+  {text:"There are only two types of Americans: those who live in New York, and those who wish they could.",cat:"Eric on New York City"},
+  {text:"Go back to Iowa. You go back to Ohio. New York City belongs to the people that was here and made New York City what it is.",cat:"Eric on New York City"},
+  {text:"So everyone who moved to Florida, get your butts back to New York City because New York City is where you want to be.",cat:"Eric on New York City"},
+  {text:"It blows my mind when I hear, 'So what if they leave?' No, you leave! I want my high-income earners right here.",cat:"Eric on New York City"},
+  {text:"This is New York, we don't wear Boston hats.",cat:"Eric on New York City"},
+  {text:"8 million New Yorkers, 35 million opinions, and a new challenge every day? I love it.",cat:"Eric on New York City"},
+  {text:"Lions don't lose sleep over the opinions of the sheep.",cat:"Best of the rest"},
+  {text:"I wake up in the morning sometimes and look at myself and give myself the finger.",cat:"Best of the rest"},
+  {text:"Why do I keep winning?",cat:"Best of the rest"},
+  {text:"I say every day that I wake up: 'When does the hard part start?' Because it's not hard for me.",cat:"Best of the rest"},
+  {text:"If you don't educate, you will incarcerate.",cat:"Best of the rest"},
+  {text:"You can't stay home in your pajamas all day.",cat:"Best of the rest"},
+  {text:"Andrew Cuomo is a snake and a liar.",cat:"Best of the rest"},
+  {text:"In City Hall, everyone is learning the Eric Adams system.",cat:"Best of the rest"},
+  {text:"It's empowering to know that you could not be imprisoned by medicine.",cat:"Best of the rest"},
+  {text:"When you raise your pants, you raise your character. When you raise your pants, you raise your grades. When you raise your pants, you raise your self-esteem.",cat:"Best of the rest"},
+  {text:"If he wants to participate in a circus, that's fine. I'm just not buying the tickets.",cat:"Best of the rest"},
+  {text:"Merengue is the ballet of America.",cat:"Best of the rest"},
+  {text:"I'm not going to resign, I'm going to reign.",cat:"Best of the rest"},
+];
+
+function load() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || DEFAULTS.slice(); }
+  catch { return DEFAULTS.slice(); }
+}
+function save(q) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(q)); } catch {} }
+
+let quotes = load();
+let filtered = quotes.slice();
+let current = Math.floor(Math.random() * filtered.length);
+
+function filterCategory() {
+  const cat = document.getElementById('cat-filter').value;
+  filtered = cat === 'all' ? quotes.slice() : quotes.filter(q => q.cat === cat);
+  if (!filtered.length) filtered = quotes.slice();
+  current = Math.floor(Math.random() * filtered.length);
+  show(current);
+}
+
+function show(i) {
+  const q = filtered[i];
+  document.getElementById('qt').textContent = q.text;
+  document.getElementById('qcat').textContent = q.cat;
+}
+
+function nextQuote() {
+  if (!filtered.length) return;
+  let n;
+  do { n = Math.floor(Math.random() * filtered.length); } while (filtered.length > 1 && n === current);
+  current = n;
+  show(current);
+}
+
+function toggleEditor() {
+  const ed = document.getElementById('editor');
+  const showing = ed.style.display !== 'none';
+  ed.style.display = showing ? 'none' : 'block';
+  document.getElementById('edit-btn').textContent = showing ? 'Edit quotes' : 'Done';
+  if (!showing) renderList();
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function renderList() {
+  const el = document.getElementById('quote-list');
+  el.innerHTML = quotes.map((q, i) =>
+    `<div class="quote-row">
+      <div style="flex:1;">
+        <div class="quote-row-text">${esc(q.text)}</div>
+        <div class="quote-row-cat">${esc(q.cat)}</div>
+      </div>
+      <button class="del-btn" onclick="del(${i})">×</button>
+    </div>`
+  ).join('');
+}
+
+function del(i) {
+  quotes.splice(i, 1);
+  save(quotes);
+  filterCategory();
+  renderList();
+}
+
+function addQuote() {
+  const t = document.getElementById('new-q').value.trim();
+  const cat = document.getElementById('new-cat').value;
+  if (!t) return;
+  quotes.push({ text: t, cat });
+  save(quotes);
+  document.getElementById('new-q').value = '';
+  filterCategory();
+  renderList();
+}
+
+show(current);
+</script>
+</body>
+</html>
